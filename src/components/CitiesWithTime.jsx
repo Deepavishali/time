@@ -7,6 +7,7 @@ const CitiesWithTime = () => {
 
   const cities = ['New York', 'London', 'Paris', 'Tokyo', 'Sydney', 'Berlin'];
 
+
   // Fetch city times from the API based on city geocode
   const fetchCityTimes = async () => {
     try {

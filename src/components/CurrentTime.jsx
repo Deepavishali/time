@@ -6,6 +6,7 @@ import CitiesWithTime from './CitiesWithTime';
 import Navbar from './Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLocation, getTime } from './redux/Slice';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 
 const cities = [
@@ -27,9 +28,6 @@ const CurrentTime = () => {
   const [location, setLocation] = useState({
     latitude: null,
     longitude: null,
-    city: '',
-    state: '',
-    country: '',
     error: ''
   });
 
@@ -116,121 +114,46 @@ const CurrentTime = () => {
     }
   }, [dispatch, location.latitude, location.longitude]);
 
-
-
   useEffect(() => {
-    const updateTime = async (latitude, longitude) => {
-      try {
-        const response = await fetch(
-          `https://timeapi.io/api/time/current/coordinate?latitude=${latitude}&longitude=${longitude}`
-        );
-        const data = await response.json();
-        const now = formatDate(data); 
-        if (!isNaN(now.getTime())) {
-          setTimeData(now); 
-        }
-      } catch (error) {
-        console.error('Error fetching time data:', error);
-      }
-    };
+    // Check if Time data is valid
+    if (Time?.statusCode === 200 && Time?.data?.currentLocalTime) {
+      const initialLocalTime = new Date(Time.data.currentLocalTime);
+      setTimeData(initialLocalTime);
 
-    const fetchCityTimes = async () => {
-      const fetchedTimes = await Promise.all(
-        cities.map(async (city) => {
-          try {
-            const timeResponse = await fetch(
-              `https://timeapi.io/api/time/current/coordinate?latitude=${city.lat}&longitude=${city.lon}`
-            );
-            const timeData = await timeResponse.json();
-            const cityTime = formatDate(timeData);  // Use formatted date for city times
-            return {
-              city: city.name,
-              time: !isNaN(cityTime.getTime()) ? cityTime : 'Invalid Date',  // Validate date
-            };
-          } catch (error) {
-            return { city: city.name, time: 'Error fetching time', error };
-          }
-        })
-      );
-      setCityTimes(fetchedTimes);  
-    };
+      // Start ticking the local time by 1 second every second
+      const intervalId = setInterval(() => {
+        setTimeData((prevTime) => new Date(prevTime.getTime() + 1000));
+      }, 1000); // Runs every second
 
-    const syncTimes = () => {
-      // Increment both current location and city times every second
-      setTimeData((prevTimeData) => new Date(prevTimeData.getTime() + 1000));
-      setCityTimes((prevCityTimes) =>
-        prevCityTimes.map((cityTime) => {
-          if (cityTime.time instanceof Date && !isNaN(cityTime.time.getTime())) {
-            const updatedTime = new Date(cityTime.time.getTime() + 1000);  
-            return {
-              ...cityTime,
-              time: updatedTime
-            };
-          }
-          return cityTime;
-        })
-      );
-    };
-
-    const fetchLocation = async (latitude, longitude) => {
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-        );
-        const data = await response.json();
-        const { city, state, country } = data.address || {};
-        setLocation({
-          latitude,
-          longitude,
-          city: city || '',
-          state: state || '',
-          country: country || '',
-          error: ''
-        });
-      } catch (error) {
-        setLocation(prev => ({
-          ...prev,
-          error: 'Unable to fetch location information'
-        }));
-      }
-    };
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          updateTime(latitude, longitude);  
-          fetchCityTimes();  
-          fetchLocation(latitude, longitude);  // Fetch the location info
-
-          const interval = setInterval(syncTimes, 1000);
-
-          return () => clearInterval(interval);  
-        },
-        (error) => {
-          console.error('Error getting geolocation:', error);
-        }
-      );
+      return () => clearInterval(intervalId); // Cleanup on unmount
     } else {
-      console.error('Geolocation is not supported by your browser.');
+      console.error('Invalid Time data:', Time);
     }
-  }, []);
+  }, [Time?.statusCode, Time?.data?.currentLocalTime]);
+  
+   
+    const locationData = Location?.data?.address || {};
+    const { town, state_district, state,country } = locationData;
+console.log(locationData)
 
   return (
     <div>
       <Navbar/>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
     <div className="grid grid-cols-3 gap-4 p-8 h-screen" style={{ height: '80vh' }}>
       {/* First box */}
       <div className="bg-gray-200 rounded-lg p-6 shadow-md group overflow-hidden hover:overflow-y-scroll h-full">
         <Cities />
       </div>
       {/* Second box */}
-      {/* <div className="bg-gray-200 rounded-lg p-6 shadow-md h-full">
+      <div className="bg-gray-200 rounded-lg p-6 shadow-md h-full">
         <div className="text-center mt-4">
            
            {location.latitude && location.longitude ? (
             <p className='mt-4'>
-            Time in <strong>{location.city} </strong> , {location.state}, {location.country}
+            Time in <strong>{town} </strong> ,<strong>{state_district} </strong>,<strong>{state} </strong>,<strong>{country} </strong>
             </p>
           ) : (
             <p className='text-red-500'>
@@ -250,10 +173,10 @@ const CurrentTime = () => {
           </div>
         </div>
         <div><CitiesWithTime /></div>
-      </div> */}
+      </div>
 
       {/* Third box */}
-      {/* <div className="bg-gray-200 rounded-lg shadow-md w-full h-full">
+      <div className="bg-gray-200 rounded-lg shadow-md w-full h-full">
       {location.latitude && location.longitude ? (
       <MapContainer
         center={[location.latitude, location.longitude]}
@@ -274,9 +197,9 @@ const CurrentTime = () => {
     ) : (
       <h1>Loading Map...</h1>
     )}
-      </div> */}
+      </div>
     </div>
-
+      )}
     </div>
   );
 };
