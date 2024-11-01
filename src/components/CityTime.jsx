@@ -6,6 +6,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCoordinates, getTime, getWeather } from './redux/Slice';
 
+
 const getFormattedDate = (date) => {
   return date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -22,6 +23,27 @@ const getWeekNumber = (date) => {
 };
 
 const CityTime = () => {
+
+  const cities = [
+    { name: "Tokyo", timeZone: "Asia/Tokyo" },
+    { name: "Sydney", timeZone: "Australia/Sydney" },
+    { name: "London", timeZone: "Europe/London" },
+    { name: "Toronto",timeZone: "America/Toronto"},
+    { name: "Lagos", timeZone: "Africa/Lagos" },
+    { name: "Singapore", timeZone: "Asia/Singapore" },
+    { name: "Mumbai", timeZone: "Asia/Kolkata" },
+    { name: "Dubai", timeZone: "Asia/Dubai" },
+  ];
+  const calculateTimeDifference = (cityTimeZone) => {
+    const cityTime = new Date().toLocaleString("en-US", { timeZone: cityTimeZone });
+    const cityTimeObj = new Date(cityTime);
+    const difference = (cityTimeObj - currentLocalTime) / (1000 * 60 * 60);
+    return {
+      value: Math.abs(difference.toFixed(1)),
+      direction: difference >= 0 ? 'ahead' : 'behind'
+    };
+  };
+
   const dispatch = useDispatch();
   const { city } = useParams();
   const [position, setPosition] = useState([]);
@@ -67,7 +89,7 @@ const CityTime = () => {
     }
   }, [Time]);
 
-const WeatherData = Weather?.data?.current.condition || {};
+const WeatherData = Weather?.data?.current || {};
 const {feelslike_c,temp_c} = WeatherData;
 console.log(WeatherData);
 
@@ -146,8 +168,36 @@ const {text,icon} = weatherCondition;
 
             {/* Time Difference Box */}
             <div className="bg-[#ffffff] rounded-lg p-6 shadow-md group overflow-hidden h-full">
-              <TimeDifferenceTable searchedCity={city} cityTimeData={currentLocalTime} />
-            </div>
+            <h2 className="text-2xl font-bold mb-4" style={{ color: "#020202" }}>
+              Time Difference from {city}
+            </h2>
+            <table className="w-full text-left border-collapse">
+              <tbody>
+                {cities.map(({ name, timeZone }, index) => {
+                  const { value, direction } = calculateTimeDifference(timeZone);
+                  return (
+                    <tr key={index}>
+                      <td className="p-2 font-bold" style={{ color: "#020202" }}>{name}</td>
+                      <td className="p-2">
+                        <div className="relative w-full h-4 flex justify-center">
+                          <div
+                            className={`h-full ${direction === 'behind' ? 'mr-auto' : 'ml-auto'}`}
+                            style={{
+                              width: `calc(100% / 10 * ${value})`,
+                              backgroundColor: "#c60024",
+                            }}
+                          ></div>
+                        </div>
+                      </td>
+                      <td className="p-2 font-bold" style={{ color: "#020202" }}>
+                        {direction === 'ahead' ? `+${value} hours` : `-${value} hours`}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
           </div>
         
       )}
