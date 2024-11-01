@@ -85,20 +85,20 @@ const {text,icon} = weatherCondition;
         
           <div className="grid grid-cols-2 gap-8 p-4" style={{ height: '80vh' }}>
             {/* Current Time Display */}
-            <div className="bg-[#0FFCBE] rounded-lg p-6 shadow-md h-full">
+            <div className="bg-[#ffffff] rounded-lg p-6 shadow-md h-full">
             <div className="text-center mt-8">
   {/* Location Display */}
-  <p className="mt-4 text-[#106EBE]">
+  <p className="mt-4 text-[#020202]">
     Time in <strong>{city}</strong>
   </p>
 
   {/* Time Display */}
-  <div className="text-7xl text-[#106EBE]">
+  <div className="text-7xl text-[#020202]">
     {new Date(currentLocalTime).toLocaleTimeString()}
   </div>
 
   {/* Full Date Display */}
-  <div className="mt-4 text-2xl text-[#106EBE]">
+  <div className="mt-4 text-2xl text-[#020202]">
     {currentLocalTime
       ? `${getFormattedDate(currentLocalTime)}, week ${getWeekNumber(currentLocalTime)}`
       : 'Loading date...'}
@@ -107,17 +107,17 @@ const {text,icon} = weatherCondition;
 {/* weather display */}
 
 <div className="text-center mb-4">
-      <h2 className="text-md font-bold text-[#106EBE]">
+      <h2 className="text-md font-bold text-[#020202]">
         WEATHER in {city}
       </h2>
-      <p className="text-md font-semibold text-[#106EBE] mt-2">
+      <p className="text-md font-semibold text-[#020202] mt-2">
         {temp_c}°C, Feels like {feelslike_c}°C
       </p>
     </div>
 
     <div className="flex items-center justify-center mb-2">
       <img src={icon} alt="Weather icon" className="w-12 h-12" />
-      <span className="text-md font-bold text-[#106EBE] ml-3">{text}</span>
+      <span className="text-md font-bold text-[#020202] ml-3">{text}</span>
     </div>
 
               {/* Map Display */}
@@ -145,7 +145,7 @@ const {text,icon} = weatherCondition;
             </div>
 
             {/* Time Difference Box */}
-            <div className="bg-[#0FFCBE] rounded-lg p-6 shadow-md group overflow-hidden h-full">
+            <div className="bg-[#ffffff] rounded-lg p-6 shadow-md group overflow-hidden h-full">
               <TimeDifferenceTable searchedCity={city} cityTimeData={currentLocalTime} />
             </div>
           </div>

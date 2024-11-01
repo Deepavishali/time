@@ -6,6 +6,9 @@ const cities = [
   { name: "New York" },
   { name: "Toronto" },
   { name: "São Paulo" },
+  { name: "Singapore" },
+  { name: "mumbai" },
+  { name: "Dubai" },
 ];
 
 const TimeDifferenceTable = ({ searchedCity }) => {
@@ -93,7 +96,7 @@ const TimeDifferenceTable = ({ searchedCity }) => {
 
   return (
     <div className="my-6 p-4">
-      <h2 className="text-2xl font-bold mb-4" style={{ color: "#106EBE" }}>
+      <h2 className="text-2xl font-bold mb-4" style={{ color: "#020202" }}>
         Time Difference from {searchedCity}
       </h2>
       <table className="w-full text-left border-collapse">
@@ -104,9 +107,9 @@ const TimeDifferenceTable = ({ searchedCity }) => {
             if (cityUTCOffset === undefined) {
               return (
                 <tr key={index}>
-                  <td className="p-2 font-medium" style={{ color: "#106EBE" }}>{city.name}</td>
-                  <td className="p-2" style={{ color: "#106EBE" }}>Unavailable</td>
-                  <td className="p-2 text-[#106EBE]">N/A</td>
+                  <td className="p-2 font-medium" style={{ color: "#020202" }}>{city.name}</td>
+                  <td className="p-2" style={{ color: "#020202" }}>Unavailable</td>
+                  <td className="p-2 text-[#020202]">N/A</td>
                 </tr>
               );
             }
@@ -115,19 +118,19 @@ const TimeDifferenceTable = ({ searchedCity }) => {
 
             return (
               <tr key={index}>
-                <td className="p-2 font-medium" style={{ color: "#106EBE" }}>{city.name}</td>
+                <td className="p-2 font-bold" style={{ color: "#020202" }}>{city.name}</td>
                 <td className="p-2">
                   <div className="relative w-full h-4">
                     <div
                       className="absolute top-0 h-full"
                       style={{
                         width: `calc(100% / 18 * ${Math.abs(timeDifference)})`,
-                        backgroundColor: "#106EBE",
+                        backgroundColor: "#c60024",
                       }}
                     ></div>
                   </div>
                 </td>
-                <td className="p-2" style={{ color: "#106EBE" }}>
+                <td className="p-2 font-bold" style={{ color: "#020202" }}>
                   {timeDifference >= 0 ? `+${timeDifference}` : timeDifference} hours
                 </td>
               </tr>
