@@ -4,7 +4,7 @@ import Navbar from './Navbar';
 import TimeDifferenceTable from './TimeDifferenceTable';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCoordinates, getTime } from './redux/Slice';
+import { getCoordinates, getTime, getWeather } from './redux/Slice';
 
 const getFormattedDate = (date) => {
   return date.toLocaleDateString('en-US', {
@@ -27,7 +27,7 @@ const CityTime = () => {
   const [position, setPosition] = useState([]);
   const [currentLocalTime, setCurrentLocalTime] = useState('');
   
-  const { Time, Location, isLoading, error: reduxError } = useSelector((state) => state.time);
+  const { Time, Location,Weather, isLoading, error: reduxError } = useSelector((state) => state.time);
 
   useEffect(() => {
     if (city) {
@@ -47,6 +47,7 @@ const CityTime = () => {
       
       // Now dispatch the action to fetch the time based on coordinates
       dispatch(getTime(coordinates));
+      dispatch(getWeather(coordinates));
     }
   }, [Location, dispatch]);
 
@@ -66,6 +67,13 @@ const CityTime = () => {
     }
   }, [Time]);
 
+const WeatherData = Weather?.data?.current.condition || {};
+const {feelslike_c,temp_c} = WeatherData;
+console.log(WeatherData);
+
+const weatherCondition = Weather?.data.current.condition || {};
+const {text,icon} = weatherCondition;
+
   return (
     <div>
       <Navbar />
@@ -77,25 +85,40 @@ const CityTime = () => {
         
           <div className="grid grid-cols-2 gap-8 p-4" style={{ height: '80vh' }}>
             {/* Current Time Display */}
-            <div className="bg-gray-200 rounded-lg p-6 shadow-md h-full">
-              <div className="text-center mt-8">
-                {/* Location Display */}
-                <p className="mt-4">
-                  Time in <strong>{city}</strong>
-                </p>
+            <div className="bg-[#0FFCBE] rounded-lg p-6 shadow-md h-full">
+            <div className="text-center mt-8">
+  {/* Location Display */}
+  <p className="mt-4 text-[#106EBE]">
+    Time in <strong>{city}</strong>
+  </p>
 
-                {/* Time Display */}
-                <div className="text-7xl">
-                  {new Date(currentLocalTime).toLocaleTimeString()}
-                </div>
+  {/* Time Display */}
+  <div className="text-7xl text-[#106EBE]">
+    {new Date(currentLocalTime).toLocaleTimeString()}
+  </div>
 
-                {/* Full Date Display */}
-                <div className="mt-4 text-2xl">
-                  {currentLocalTime
-                    ? `${getFormattedDate(currentLocalTime)}, week ${getWeekNumber(currentLocalTime)}`
-                    : 'Loading date...'}
-                </div>
-              </div>
+  {/* Full Date Display */}
+  <div className="mt-4 text-2xl text-[#106EBE]">
+    {currentLocalTime
+      ? `${getFormattedDate(currentLocalTime)}, week ${getWeekNumber(currentLocalTime)}`
+      : 'Loading date...'}
+  </div>
+</div>
+{/* weather display */}
+
+<div className="text-center mb-4">
+      <h2 className="text-md font-bold text-[#106EBE]">
+        WEATHER in {city}
+      </h2>
+      <p className="text-md font-semibold text-[#106EBE] mt-2">
+        {temp_c}°C, Feels like {feelslike_c}°C
+      </p>
+    </div>
+
+    <div className="flex items-center justify-center mb-2">
+      <img src={icon} alt="Weather icon" className="w-12 h-12" />
+      <span className="text-md font-bold text-[#106EBE] ml-3">{text}</span>
+    </div>
 
               {/* Map Display */}
               <div className="bg-gray-200 rounded-lg shadow-md mt-8 ml-32" style={{ height: '30vh', width: '60vh' }}>
@@ -122,8 +145,7 @@ const CityTime = () => {
             </div>
 
             {/* Time Difference Box */}
-            <div className="bg-gray-200 rounded-lg p-6 shadow-md group overflow-hidden hover:overflow-y-scroll h-full">
-              <h2 className="text-2xl font-bold mb-4">Time Difference</h2>
+            <div className="bg-[#0FFCBE] rounded-lg p-6 shadow-md group overflow-hidden h-full">
               <TimeDifferenceTable searchedCity={city} cityTimeData={currentLocalTime} />
             </div>
           </div>

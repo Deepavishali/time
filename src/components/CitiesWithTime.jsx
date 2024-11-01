@@ -96,7 +96,7 @@ const CitiesWithTime = () => {
     {cityTimes.map((cityTime, index) => (
       <div
         key={index}
-        className="flex flex-col justify-center items-center p-2 bg-gray-400 text-black rounded-md hover:bg-gray-600 hover:text-white transition-colors h-32 w-full"
+        className="flex flex-col justify-center items-center p-2 bg-[#c60024] text-[#ffffff] hover:text-lg rounded-md transition-all transform hover:scale-105 h-32 w-full"
       >
         <strong>{cityTime.city}</strong>
         <div>

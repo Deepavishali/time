@@ -35,7 +35,7 @@ const Cities = () => {
         <div
           key={index}
           onClick={() => handleCityClick(city)}
-          className='p-4 cursor-pointer font-serif text-lg text-gray-700 hover:font-bold hover:text-black transition-colors'
+          className="p-4 cursor-pointer font-serif text-xl text-[#020202] hover:font-bold hover:text-2xl transition-colors"
         >
           {city}
         </div>
